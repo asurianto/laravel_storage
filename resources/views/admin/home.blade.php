@@ -27,11 +27,13 @@
                             <div class="col-md-6">
                                 <label for="name" class="col-md-4 col-form-label text-md-right">{{$record->name}}</label>
                             </div>
+                            @if(Auth::user()->hasAnyRole(['admin']))
                             <div class="col-md-2 text-center">
                                 <label for="name" class="col-form-label">Accept</label>
                                 <label for="name" class="col-form-label text-center">|</label>
                                 <label for="name" class="col-form-label text-md-right">Reject</label>
                             </div>
+                            @endif
                         </div>
                         @endforeach
                     @endisset
