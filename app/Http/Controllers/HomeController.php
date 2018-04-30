@@ -25,7 +25,7 @@ class HomeController extends Controller
             $data = DB::table('form_dana')->where('user_id',$user->id)->get();
         }
         else{
-            $data = FormDana::all();
+            $data =  DB::table('form_dana')->where('status',0)->get();
         }
         return view('admin.home')->with('data',$data);
     }
@@ -39,7 +39,6 @@ class HomeController extends Controller
     public function saveForm(Request $request)
     {
         $request->user()->authorizeRoles(['admin', 'user']);
-        // exit($request->input('name'));
         $user = $request->user();
 
         //Save to db    
@@ -62,6 +61,20 @@ class HomeController extends Controller
         );
         
         return redirect('/')->with('message', 'Success Insert Data !');
+    
+    }
+
+    public function updateForm($id,$status,Request $request)
+    {   
+        
+        $request->user()->authorizeRoles(['admin', 'user']);
+        // exit($id);
+        $user = $request->user();
+
+        //Save to db    
+        DB::table('form_dana')->where('id',$id)->update(['status'=>$status]);
+        
+        return redirect('/')->with('message', 'Success Update Data !');
     
     }
 

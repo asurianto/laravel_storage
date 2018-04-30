@@ -14,26 +14,41 @@
                         </div>
                     @endif
                     
-                    @isset ($message)
+                    @if (session('message'))
                         <div class="alert alert-success">
-                            {{$message}}
+                            {{session('message')}}
                         </div>
-                    @endisset
-
+                    @endif
+                    <div class="form-group row">
+                        <div class="col-md-12">
+                            <label for="name" class="col-md-4 col-form-label text-md-center">Nama</label>
+                            @if(Auth::user()->hasAnyRole(['user']))
+                            <label for="name" class="col-md-4 col-form-label text-md-center">Status</label>
+                            @endif
+                        </div>
+                    </div>
                     @isset ($data)
                         @foreach($data as $record)
                         <div class="form-group row">
-                            <label for="name" class="col-md-4 col-form-label text-md-right">Nama</label>
-                            <div class="col-md-6">
-                                <label for="name" class="col-md-4 col-form-label text-md-right">{{$record->name}}</label>
+                            <div class="col-md-12">
+                                <label for="name" class="col-md-4 col-form-label text-md-center">{{$record->name}}</label>                        
+                                @if(Auth::user()->hasAnyRole(['user']))
+                                <label for="name" class="col-md-4 col-form-label text-md-center">
+                                    @if($record->status == 1)
+                                        Accepted
+                                    @elseif($record->status == 2)
+                                        Rejected
+                                    @else
+                                        Pending
+                                    @endif
+                                </label>
+                                @endif
+                                @if(Auth::user()->hasAnyRole(['admin']))
+                                    <label for="name" class="col-form-label"><a href="{{ route('update-form',['id'=>$record->id,'status'=>1 ]) }}">Accept</a></label>
+                                    <label for="name" class="col-form-label text-center">|</label>
+                                    <label for="name" class="col-form-label text-md-right"><a href="{{ route('update-form',['id'=>$record->id,'status'=>2 ]) }}">Reject</a></label>
+                                @endif
                             </div>
-                            @if(Auth::user()->hasAnyRole(['admin']))
-                            <div class="col-md-2 text-center">
-                                <label for="name" class="col-form-label">Accept</label>
-                                <label for="name" class="col-form-label text-center">|</label>
-                                <label for="name" class="col-form-label text-md-right">Reject</label>
-                            </div>
-                            @endif
                         </div>
                         @endforeach
                     @endisset
