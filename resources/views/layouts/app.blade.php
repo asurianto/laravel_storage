@@ -44,10 +44,10 @@
                             <li><a class="nav-link" href="{{ route('login') }}">{{ __('Login') }}</a></li>
                             <li><a class="nav-link" href="{{ route('register') }}">{{ __('Register') }}</a></li>
                         @else
-                        @if(Auth::user()->hasAnyRole(['user']))
+                        @if(Auth::user()->hasAnyRole(['admin']))
                             <li class="nav-item dropdown">
-                                <a id="navbarDropdown" class="nav-link" href="{{ route('add-form') }}" role="button">
-                                    Add Form
+                                <a id="navbarDropdown" class="nav-link" href="{{ route('add-file') }}" role="button">
+                                    Add File
                                 </a>
                             </li>
                         @endif

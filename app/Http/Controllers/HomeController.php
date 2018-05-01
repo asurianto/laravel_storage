@@ -9,6 +9,8 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use DateTime;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\Storage;
+use Symfony\Component\HttpFoundation\File\UploadedFile;
 
 class HomeController extends Controller
 {
@@ -22,59 +24,58 @@ class HomeController extends Controller
         $request->user()->authorizeRoles(['admin', 'user']);
         $user = $request->user();
         if($request->user()->hasAnyRole(['user'])){
-            $data = DB::table('form_dana')->where('user_id',$user->id)->get();
+            $data = DB::table('file')->get();
         }
         else{
-            $data =  DB::table('form_dana')->where('status',0)->get();
+            $data =  DB::table('file')->get();
         }
         return view('admin.home')->with('data',$data);
     }
 
-    public function addForm(Request $request)
+    public function addFile(Request $request)
     {
         $request->user()->authorizeRoles(['admin', 'user']);
         return view('addForm');
     }
 
-    public function saveForm(Request $request)
+    public function saveFile(Request $request)
     {
         $request->user()->authorizeRoles(['admin', 'user']);
         $user = $request->user();
-
+        // var_dump($request->fileToUpload->getClientOriginalName());
+        // exit();
+        // Storage::put('document', $request->file('fileToUpload'));
+    
         //Save to db    
-        DB::table('form_dana')->insert(
-            [   'user_id' => $user->id, 
-                'name' => $request->input('name'),
-                'nip' => $request->input('nip'),
-                'area' => $request->input('area'),
-                'rekening' => $request->input('rekening'),
-                'bank' => $request->input('bank'),
-                'dana' => $request->input('dana'),
-                'terbilang' => $request->input('terbilang'),
-                'keperluan' => $request->input('keperluan'),
-                'cicilan' => $request->input('cicilan'),
-                'tanggal_dana' => date('Y-m-d H:i:s',strtotime($request->input('tanggal_dana'))),
-                'status' => 0,
+        $id =  DB::table('file')->insertGetId(
+            [   'name' => $request->fileToUpload->getClientOriginalName(),
                 'created_at'=>Carbon::now()->toDateTimeString(),
                 'updated_at'=>Carbon::now()->toDateTimeString()
             ]
         );
-        
+        $path = Storage::putFileAs(
+            'document/'.$id, $request->fileToUpload, $request->fileToUpload->getClientOriginalName()
+        );
+    
         return redirect('/')->with('message', 'Success Insert Data !');
     
     }
 
-    public function updateForm($id,$status,Request $request)
+    public function downloadFile($id,$name,Request $request)
+    {   
+        $request->user()->authorizeRoles(['admin','user']);
+        $user = $request->user();   
+        return Storage::download('document/'.$id.'/'.$name);   
+    }
+
+    public function deleteFile($id,$name,Request $request)
     {   
         
-        $request->user()->authorizeRoles(['admin', 'user']);
-        // exit($id);
+        $request->user()->authorizeRoles(['admin']);
         $user = $request->user();
-
-        //Save to db    
-        DB::table('form_dana')->where('id',$id)->update(['status'=>$status]);
-        
-        return redirect('/')->with('message', 'Success Update Data !');
+        Storage::delete('document/'.$id.'/'.$name);
+        DB::table('file')->where('id',$id)->delete();        
+        return redirect('/')->with('message', 'Success Delete Data !');
     
     }
 

@@ -15,7 +15,8 @@
 //     return view('welcome');
 // });
 Route::get('/','HomeController@index');
-Route::get('add-form','HomeController@addForm')->name('add-form');
-Route::get('update-form/{id}/{status}','HomeController@updateForm')->name('update-form');
-Route::post('save-form','HomeController@saveForm')->name('save-form');
+Route::get('add-file','HomeController@addFile')->name('add-file');
+Route::get('download-file/{id}/{name}','HomeController@downloadFile')->name('download-file');
+Route::get('delete-file/{id}/{name}','HomeController@deleteFile')->name('delete-file');
+Route::post('save-file','HomeController@saveFile')->name('save-file');
 Auth::routes();
